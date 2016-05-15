@@ -8,8 +8,11 @@ import android.graphics.pdf.PdfRenderer;
 import android.os.ParcelFileDescriptor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.FloatMath;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,25 +22,24 @@ import android.widget.Toast;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private GestureDetector gestureDetector;
+    private ScaleGestureDetector SGD ;
     private static final int REQUEST_PICK_FILE = 1;
     private TextView filePath;
     private ImageView print;
-    private Button Browse,next,previous;
+    private Button Browse;
     private File selectedFile;
     private int currentpage=0;
+    private float scale = 1f;
+    Matrix m = new Matrix();
 
-    @Override
+   @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         filePath = (TextView) findViewById(R.id.file_path);
         print = (ImageView)findViewById(R.id.imageView);
-        next = (Button)findViewById(R.id.next);
-        previous = (Button)findViewById(R.id.previous);
         Browse = (Button)findViewById(R.id.browse);
-        next.setOnClickListener(this);
-        previous.setOnClickListener(this);
+        SGD = new ScaleGestureDetector(this,new ScaleListener());
         Browse.setOnClickListener(this);
     }
     @Override
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(this, FilePicker.class);
                 startActivityForResult(intent, REQUEST_PICK_FILE);
                 break;
-           case R.id.next:
+          /* case R.id.next:
                 currentpage++;
                 pdfrender();
                 break;
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 pdfrender();
                 break;
             default:
-                Log.e("Task","Task");
+                Log.e("Task","Task");*/
         }
     }
     @Override
@@ -89,9 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else if(currentpage > renderer.getPageCount()){
                 currentpage = renderer.getPageCount() - 1;
             }
-
-            Toast.makeText(this,"Pages = "+ currentpage ,Toast.LENGTH_LONG).show();
-            Matrix m = print.getImageMatrix();
+            m = print.getImageMatrix();
             Rect  rect =  new Rect( 0, 0 ,REQ_WIDTH,REQ_HEIGHT);
             renderer.openPage(currentpage).render(bitmap,rect,m,
                     PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
@@ -102,5 +102,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
 
+    }
+    public boolean onTouchEvent(MotionEvent ev) {
+        SGD.onTouchEvent(ev);
+        return true;
+    }
+    private class ScaleListener extends ScaleGestureDetector.
+            SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            scale *= detector.getScaleFactor();
+            scale = Math.max(0.1f, Math.min(scale, 5.0f));
+            m.setScale(scale, scale);
+            print.setImageMatrix(m);
+            return true;
+        }
     }
 }
