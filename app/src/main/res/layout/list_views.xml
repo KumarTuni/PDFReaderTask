@@ -10,7 +10,6 @@
         android:layout_marginTop="5dip"
         android:layout_marginBottom="5dip"
         android:layout_marginLeft="5dip"
-        android:src="@drawable/baba"
         android:scaleType="centerCrop" />
 
     <TextView
@@ -19,9 +18,10 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_gravity="left|center_vertical"
-        android:textSize="28sp"
+        android:textSize="24sp"
         android:layout_marginLeft="10dip"
         android:singleLine="true"
-        android:text="Filename" />
+        android:text="Filename"
+        android:textColor="@color/colorPrimaryDark"/>
 
 </LinearLayout>

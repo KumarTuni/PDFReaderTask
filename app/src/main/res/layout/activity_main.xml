@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -6,25 +7,48 @@
     android:orientation="vertical"
     tools:context="rohin.a121pdf.com.pdfreadertask.MainActivity">
 
+    <Button
+        android:id="@+id/browse"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="3dp"
+        android:text="Select only PDF file" />
+
+    <TextView
+        android:id="@+id/file_path"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/colorPrimary" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="3dp"
+        android:layout_weight="1"
+        android:scaleType="matrix" />
+    -
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="horizontal">
+
         <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="3dp"
-            android:id="@+id/browse"
-            android:text="Select only PDF file" />
-        <TextView
+            android:id="@+id/previous"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/file_path"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/colorPrimary" />
-       <ImageView
-           android:layout_width="match_parent"
-           android:layout_height="0dp"
-           android:id="@+id/imageView"
-           android:layout_weight="1"
-           android:scaleType="matrix"
-           android:layout_marginTop="3dp" />
+            android:layout_alignParentLeft="true"
+            android:text="Previous" />
 
+        <Button
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Next" />
+    </RelativeLayout>
 </LinearLayout>
