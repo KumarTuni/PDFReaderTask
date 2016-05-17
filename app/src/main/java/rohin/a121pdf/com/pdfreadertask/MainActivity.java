@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView print;
     private Button Browse, Next, Prev;
     private File selectedFile;
+    String fileextension;
     private int currentpage=0;
     private float scale = 1f;
     Matrix m = new Matrix();
@@ -55,12 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        Prev.setVisibility(View.GONE);
        print.setVisibility(View.GONE);
 
-
-
        print.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
-
-
-
            @Override
            public void onSwipeLeft() {
                // Whatever
@@ -88,11 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.browse:
-                try {
-                    closeRenderer();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
                 Intent intent = new Intent(this, FilePicker.class);
                 startActivityForResult(intent, REQUEST_PICK_FILE);
 
@@ -118,22 +110,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if(data.hasExtra(FilePicker.EXTRA_FILE_PATH)) {
                         selectedFile = new File
                                 (data.getStringExtra(FilePicker.EXTRA_FILE_PATH));
-                        filePath.setText(selectedFile.getPath());
-                        try {
-                            openRenderer(getApplicationContext());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "Error! " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        fileextension=selectedFile.getAbsolutePath();
+                        filePath.setText(fileextension);
+                        String fileext=fileextension.substring(fileextension.lastIndexOf(".")+1);
+
+                        if (fileext.equalsIgnoreCase("pdf")) {
+                            try {
+                                openRenderer(getApplicationContext());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Toast.makeText(getApplicationContext(), "Error! " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                            showPage(index);
+                        }else {
+                            Toast.makeText(MainActivity.this,"Plz Select PDF File", Toast.LENGTH_SHORT).show();
+                            Next.setVisibility(View.GONE);
+                            Prev.setVisibility(View.GONE);
+                            print.setVisibility(View.GONE);
                         }
-                        showPage(index);
                     }
                     break;
             }
         }
     }
-
-
-
 
      //Open Renderer
     private void openRenderer(Context context) throws IOException {
@@ -142,20 +141,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mPdfRenderer = new PdfRenderer(ParcelFileDescriptor.open(selectedFile.getAbsoluteFile(),ParcelFileDescriptor.MODE_READ_ONLY));
     }
 
-
-
-
     //Close Renderer
     private void closeRenderer() throws IOException {
-        if (null != mCurrentPage) {
-            mCurrentPage.close();
+
+
+            if (null != mCurrentPage) {
+                mCurrentPage.close();
+            }
+            if (mPdfRenderer != null)
+                mPdfRenderer.close();
         }
-        if (mPdfRenderer != null)
-        mPdfRenderer.close();
-
-    }
-
-
 
     private void showPage(int index) {
         if (mPdfRenderer.getPageCount() <= index) {
@@ -186,14 +181,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
-
     public boolean onTouchEvent(MotionEvent ev) {
         SGD.onTouchEvent(ev);
         return true;
     }
-
-
 
     private class ScaleListener extends ScaleGestureDetector.
             SimpleOnScaleGestureListener {
@@ -207,7 +198,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -217,8 +207,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
-
-
 
     public class OnSwipeTouchListener implements View.OnTouchListener {
 
